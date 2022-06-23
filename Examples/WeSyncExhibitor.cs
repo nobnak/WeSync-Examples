@@ -10,11 +10,6 @@ using UnityEngine.Events;
 
 namespace WeSyncSys {
 
-    public interface IWeSync {
-		WeSpace Space { get; }
-		WeTime Time { get; }
-	}
-
 	[ExecuteAlways]
 	public class WeSyncExhibitor : AbstractExhibitor, IWeSync {
 
