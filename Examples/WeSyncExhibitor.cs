@@ -22,6 +22,7 @@ namespace WeSyncSys {
 
 		protected WeSpace space = new WeSpace();
 		protected WeTime time = new WeTime();
+		protected WeProjection proj = new WeProjection();
 
 		protected BaseView view;
 		protected CameraData screen;
@@ -37,6 +38,8 @@ namespace WeSyncSys {
 				if (targetCamera == null)
 					return;
 
+				proj.Apply(screen);
+
 				var uv = tuner.localUv;
 				var local = new Rect(uv.x, uv.y, uv.z, uv.w);
 				var rspace = space.Apply(screen.screenSize, local, tuner.globalSize);
@@ -44,8 +47,9 @@ namespace WeSyncSys {
 				targetCamera.orthographicSize = Mathf.Max(1f, 0.5f * rspace.localField.height);
 			};
 			validator.Validated += () => {
-				events.Changed?.Invoke(this);
+				Notify();
 			};
+			Notify();
 		}
 		private void OnValidate() {
 			validator.Invalidate();
@@ -57,11 +61,10 @@ namespace WeSyncSys {
 		}
 		#endregion
 
-		#region interface
-
 		#region IWeSync
 		public WeSpace Space => space;
 		public WeTime Time => time;
+		public WeProjection Proj => proj;
 		#endregion
 
 		#region IReadonlySubspace
@@ -101,14 +104,15 @@ namespace WeSyncSys {
 		}
 		#endregion
 
+		#region listeners
 		public void ListenCamera(GameObject gameObject) {
 			targetCamera = gameObject.GetComponent<Camera>();
 			validator.Invalidate();
 		}
-
-#endregion
+		#endregion
 
 		#region member
+		private void Notify() => events.Changed?.Invoke(this);
 		protected virtual BaseView GetView() {
 			if (view == null) {
 				var f = new SimpleViewFactory();
