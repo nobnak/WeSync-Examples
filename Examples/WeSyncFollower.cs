@@ -21,7 +21,11 @@ namespace WeSyncSys {
 			init.Validation += () => {
 				if (we == null) return;
 				var sub = we.Space.CurrSubspace;
-				transform.localPosition = -sub.localField.center;
+				try {
+					transform.localPosition = -sub.localField.center;
+				} catch(System.Exception ex) {
+					Debug.LogWarning(ex);
+				}
 			};
 			#endregion
 		}
